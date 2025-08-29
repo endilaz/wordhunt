@@ -6,7 +6,7 @@
 using namespace std;
 
 vector<int> scores = {0, 0, 0, 100, 400, 800, 1400, 1800, 2200, 2600, 3000, 3400, 3800, 4200, 4600, 5000};
-string wordlist = "CSW21.txt";
+string wordlist = "CSW21_longer.txt";
 ifstream wordlist_file;
 string history = "anagrams_log.txt";
 ofstream history_file(history, ios_base::app);
@@ -31,14 +31,17 @@ string getCurrentDateTimeString() {
     return ss.str();
 }
 
+int get_score(int len) {
+    return (len < scores.size()) ? scores[len] : (1400 + 400 * (len - 7));
+}
+
 template <typename T>
 int find_anagrams(string substr, string board, int size, ll mask, T& valid_words) {
     int score = 0;
     if (DEBUG) cout << substr << " " << board << " " << size << " " << mask << endl;
     if (words.find(substr) != words.end()) {
         if (valid_words.insert(substr).second) 
-            if (substr.size() < scores.size()) 
-                score += scores[substr.size()];
+            score += get_score(substr.size());
     }
     for (int i = 0; i < size; i++) {
         if ((((1 << i) & mask) == 0)) {
@@ -75,7 +78,7 @@ void solve(bool inputting) {
         
         string prev = *(valid_words.begin());
         for (string s : valid_words) {
-            if (s.size() < scores.size()) points -= scores[s.size()];
+            points -= get_score(s.size());
             if (s.size() < min_length) continue;
             if (s.size() != prev.size()) cout << endl;
             if (s.size() != prev.size()) history_file << endl;
